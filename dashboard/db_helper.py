@@ -1,8 +1,27 @@
 #This file will handle database interactions
 
 import sqlite3
+import os
 
-DB_PATH = "db/taxi_data.db"
+# Move up one directory level from the current script's location
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# Construct the correct path to the database
+DB_PATH = os.path.join(BASE_DIR, "db", "taxi_data.db")
+
+print(f"🔍 Database Path: {DB_PATH}")
+
+def get_all_logs():
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM logs")
+        logs = cursor.fetchall()
+        conn.close()
+        return logs
+    except Exception as e:
+        print(f"❌ Database Error: {e}")  # Print any error
+        return []
 
 def insert_taxi_log(date, earnings, expenses, fuel_cost, mileage):
     """Insert a new taxi log entry into the database."""
@@ -75,5 +94,18 @@ def get_best_worst_days():
         "best_day": {"date": best_day[0], "earnings": best_day[1]} if best_day else None,
         "worst_day": {"date": worst_day[0], "earnings": worst_day[1]} if worst_day else None
     }
+
+def get_all_logs():
+    try:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        conn.row_factory = sqlite3.Row  # Enable dictionary-style row access
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM logs")
+        logs = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in logs]
+    except Exception as e:
+        print(f"❌ Database Error: {e}")  # Print any error
+        return []
 
 

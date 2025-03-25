@@ -1,33 +1,38 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import db_helper
+import sqlite3
+import os
 
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests (useful for frontend later)
+
+# Move up one directory level from the current script's location
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# Construct the correct path to the database
+DB_PATH = os.path.join(BASE_DIR, "db", "taxi_data.db")
+
 
 @app.route("/")
 def home():
     return jsonify({"message": "Taxi Business Dashboard API is running!"})
 
-@app.route("/add_log", methods=["POST"])
-def add_log():
-    data = request.json
-    date = data.get("date")
-    earnings = data.get("earnings")
-    expenses = data.get("expenses")
-    fuel_cost = data.get("fuel_cost")
-    mileage = data.get("mileage")
-
-    if not all([date, earnings, expenses, fuel_cost, mileage]):
-        return jsonify({"error": "Missing required fields"}), 400
-
-    result = db_helper.insert_taxi_log(date, earnings, expenses, fuel_cost, mileage)
-    return jsonify(result)
-
 @app.route("/get_logs", methods=["GET"])
 def get_logs():
-    logs = db_helper.get_all_logs()
-    return jsonify({"data": logs})
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM taxi_logs ORDER BY date DESC")
+    logs = cursor.fetchall()
+    
+    conn.close()
+    
+    if logs:
+        return jsonify({"data": [dict(row) for row in logs]})
+    return jsonify({"data": []})
+
 
 @app.route("/analytics/total", methods=["GET"])
 def total_earnings():
@@ -43,7 +48,6 @@ def avg_mileage():
 def best_worst_days():
     result = db_helper.get_best_worst_days()
     return jsonify(result)
-
 
 
 
