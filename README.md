@@ -42,8 +42,8 @@ Taxi-Business-Dashboard/
 ## 🚀 Installation & Setup
 1. **Clone the Repository**
    ```sh
-   git clone https://github.com/your-username/repository-name.git
-   cd repository-name
+   git clone https://github.com/iamfahad43/Taxi-Business-Dashboard.git
+   cd Taxi-Business-Dashboard
    ```
 2. **Create and Activate Virtual Environment**
    ```sh
@@ -57,8 +57,14 @@ Taxi-Business-Dashboard/
    ```
 4. **Run the Dashboard**
    ```sh
-   streamlit run app/dashboard/app.py
+   streamlit run dashboard/app.py
    ```
+
+5. **Run the Dashboard Alternative**
+   ```sh
+   python dashboard/app.py (in one terminal) and  streamlit run dashboard_ui.py (in second terminal)
+   ```
+
 
 ## 📊 Usage
 - Enter daily earnings, fuel costs, and mileage in the interface
