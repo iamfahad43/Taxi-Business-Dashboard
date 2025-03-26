@@ -108,4 +108,27 @@ def get_all_logs():
         print(f"❌ Database Error: {e}")  # Print any error
         return []
 
+# insert data into database that reciving from the UI input
+def insert_taxi_data(date, earnings, fuel_expense, other_expense, distance_km):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+    INSERT INTO taxi_data (date, earnings, fuel_expense, other_expense, distance_km)
+    VALUES (?, ?, ?, ?, ?)
+    """, (date, earnings, fuel_expense, other_expense, distance_km))
+    
+    conn.commit()
+    conn.close()
+
+# to fetch data from database
+def fetch_all_taxi_data():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM taxi_data ORDER BY date DESC")
+    data = cursor.fetchall()
+    
+    conn.close()
+    return data
 
